@@ -1,0 +1,31 @@
+## Router on a stick setup script ##
+
+## Configure Switch for VLANS and Trunk Link between Switch and Router ## ##
+
+en
+conf t
+hostname roas-switch
+no ip domain-lookup
+int fa0/1
+switchport access vlan 10
+int fa0/2
+switchport access vlan 5
+int fa0/3
+switchport mode trunk
+
+## Configure Router ##
+
+en
+conf t
+hostname roas-router
+#banner motd # Welcome to the Router on a Stick Router! #
+no ip domain-lookup
+int fa0/0
+no shut
+int fa0/0.5
+encapsulation dot1Q 5
+ip add 192.168.2.1 255.255.255.0
+int fa0/0.10
+encapsulation dot1Q 10
+ip add 192.168.3.1 255.255.255.0
+
