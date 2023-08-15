@@ -1,0 +1,128 @@
+## Main router and DHCP router ##
+
+en
+conf t
+hostname main-and-dhcp-router
+no ip domain lookup
+int fa0/0
+ip add 50.0.0.1 255.0.0.0
+no shut
+exit
+int serial 0/3/0
+ip add 192.168.1.2 255.255.255.252
+clock rate 64000
+bandwidth 64
+no shut
+exit
+int serial 0/3/1
+ip add 192.168.1.6 255.255.255.252
+clock rate 64000
+bandwidth 64
+no shut
+exit
+show ip int brief
+
+## Router for Networks 1 & 2 ##
+
+en
+conf t
+hostname router-network-1-2
+no ip domain lookup
+int fa0/0
+ip add 10.0.0.1 255.0.0.0
+no shut
+exit
+int fa0/1
+ip add 20.0.0.1 255.0.0.0
+no shut
+exit
+int se0/1/0
+ip add 192.168.1.1 255.255.255.252
+no shut
+exit
+show ip int brief
+
+## Router for Networks 3 & 4 ##
+
+en
+conf t
+hostname router-network-3-4
+no ip domain lookup
+int fa0/0
+ip add 30.0.0.1 255.0.0.0
+no shut
+exit
+int fa0/1
+ip add 40.0.0.1 255.0.0.0
+no shut
+exit
+int se0/3/0
+ip add 192.168.1.5 255.255.255.252
+no shut
+exit
+show ip int brief
+
+## RIP Routing for Main router and DHCP router ##
+
+en
+conf t
+router rip
+network 50.0.0.0
+network 192.168.1.0
+network 192.168.4.0
+version 2
+no auto-summary
+exit
+
+## RIP Routing for Networks 1 & 2 ##
+
+en
+conf t
+router rip
+network 10.0.0.0
+network 20.0.0.0
+network 192.168.1.0
+version 2
+no auto-summary
+exit
+
+## RIP Routing for Networks 3 & 4 ##
+
+en
+conf t
+router rip
+network 30.0.0.0
+network 40.0.0.0
+network 192.168.1.4
+version 2
+no auto-summary
+exit
+
+
+## After configuring DHCP server, configure DHCP helper/relay agents ##
+
+
+## DHCP helper/relay for Router for Networks 1 & 2 ##
+
+en
+conf t
+int fa0/0
+ip helper-address 50.0.0.10
+exit
+int fa0/1
+ip helper-address 50.0.0.10
+exit
+
+## DHCP helper/relay for Router for Networks 3 & 4 ##
+
+en
+conf t
+int fa0/0
+ip helper-address 50.0.0.10
+exit
+int fa0/1
+ip helper-address 50.0.0.10
+exit
+
+
+
