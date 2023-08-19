@@ -1,0 +1,91 @@
+# VOIP #
+
+# Switch config #
+
+en
+conf t
+vlan 10
+name DATA
+vlan 20
+name VOICE
+vlan 30
+name MGT
+vlan 40
+name MISC
+vlan 50
+name NATIVE
+int fa0/1
+switchport mode trunk
+switchport trunk native vlan 50
+exit
+int range fa0/2-4
+switchport mode access
+switchport access vlan 10
+switchport voice vlan 20
+exit
+int range fa0/5-24
+switchport mode access
+switchport access vlan 40
+shut
+int range gig0/1-2
+switchport mode access
+switchport access vlan 40
+exit
+exit
+show vlan brief
+show ip int brief
+
+# Router + Phones config  #
+
+en 
+conf t
+int fa0/1.10
+encapsulation dot1Q 10
+ip add 192.168.10.1 255.255.255.0
+exit
+int fa0/1.20
+encapsulation dot1Q 20
+ip add 192.168.20.1 255.255.255.0
+int fa0/1.50
+encapsulation dot1Q 50 native
+exit
+int fa0/0
+no shut
+exit
+ip dhcp excluded-address 192.168.10.1 192.168.10.5
+ip dhcp excluded-address 192.168.20.1 192.168.20.5
+ip dhcp pool DATA10
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+exit
+ip dhcp pool VOICE20
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1
+option 150 ip 192.168.20.1
+telephony-service
+max-dn 3
+max-ephones 3
+ip source-address 192.168.20.1 port 2000
+ephone-dn 1
+number 1010
+ephone-dn 2
+number 1020
+ephone-dn 3
+number 1030
+exit
+ephone 1
+type 7960
+button 1:1
+ephone 2
+type 7960
+button 1:2
+ephone 3
+type 7960
+button 1:3
+end
+copy running-config startup-config
+
+
+## TROUBLESHOOTING #
+
+If phones stuck onm 
