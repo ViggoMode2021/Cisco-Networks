@@ -1,0 +1,58 @@
+# Setup Router with SSH #
+
+en
+conf t
+hostname R1
+no ip-domain lookup
+enable secret class
+line console 0
+enable password Wildwood
+login
+no enable password
+int g0/0 
+ip add 192.168.1.1 255.255.255.0
+no shut
+show running-config
+
+# Setup Switch with SSH #
+
+en 
+conf t
+hostname S1
+no ip-domain lookup
+enable secret class
+line console 0
+password  
+login 
+exit
+int vlan 1
+ip add 192.168.1.2 255.255.255.0
+no shut
+exit
+ip default-gateway 192.168.1.1
+show running-config
+
+# Setup Switch & Router part 2 #
+
+en
+conf t
+ip domain-name Vig.net
+crypto key generate rsa
+1024
+
+# Setup Switch & Router part 3 #
+
+en
+conf t
+username admin secret Wildwood
+line vty 0 15
+login local
+transport input ssh
+enable secret Wildwood
+
+## How to SSH into Switch or Router ##
+
+ssh -l Admin 192.168.1.1 
+
+
+
