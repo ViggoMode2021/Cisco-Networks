@@ -1,0 +1,33 @@
+# Configure Router #
+
+en
+conf t
+int fa0/0
+ip add 10.0.0.1 255.0.0.0
+no shut
+exit
+int fa0/1
+ip add 20.0.0.1 255.0.0.0
+no sh
+exit
+int fa0/0
+ip helper-address 20.0.0.10
+exit
+show ip int
+
+# Configure DHCP Snooping on Switch #
+
+en
+conf t
+ip dhcp snooping
+ip dhcp snooping
+ip dhcp snooping vlan 1
+int fa0/3
+ip dhcp snooping trust
+show running-config dhcp
+exit
+exit
+en
+conf t
+int fa0/1
+ip dhcp snooping limit rate 20
