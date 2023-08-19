@@ -1,0 +1,17 @@
+## Enable port security on switch ##
+
+en
+conf t
+int range fa0/1-2
+switchport mode access
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation restrict
+do sh ip int br
+int range fa0/3-24
+shutdown
+int range g0/1-2
+shutdown
+do sh port-security int fa0/1
+do sh port-security int fa0/2
