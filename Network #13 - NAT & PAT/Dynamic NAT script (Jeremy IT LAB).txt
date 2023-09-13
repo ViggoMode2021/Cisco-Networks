@@ -1,0 +1,26 @@
+# Router 1 #
+
+en 
+conf t
+hostname Router-1
+no ip domain-lookup
+router rip
+network 192.168.1.0
+network 1.0.0.0
+int g0/0
+ip nat inside
+int s0/3/0
+ip nat outside
+exit
+access-list 1 permit 192.168.1.0 0.0.0.255
+ip nat pool pool1 1.2.3.10 1.2.3.20 netmask 255.255.255.0 
+ip nat inside source list 1 pool pool1
+
+# Router 2 #
+
+en
+conf t
+no ip domain-lookup
+hostname Router-2
+router rip
+network 1.0.0.0

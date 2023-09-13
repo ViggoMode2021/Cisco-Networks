@@ -1,0 +1,41 @@
+# Service Provider Router #
+
+en
+conf t
+hostname SP
+ip route 0.0.0.0 0.0.0.0 se0/3/0
+int fa0/0
+ip add 10.0.0.1 255.0.0.0
+ip nat inside
+no shut
+int se0/3/0
+ip add 220.110.0.1 255.255.255.252
+clock rate 64000
+ip nat outside
+no shut
+exit
+
+ip nat inside source static 10.0.0.10 220.110.0.1
+exit
+
+# Customer edge router
+
+en
+conf t
+hostname CE
+ip route 0.0.0.0 0.0.0.0 se0/3/0
+int fa0/0
+ip add 192.168.1.1 255.255.255.0
+ip nat inside
+no shut
+int se0/3/0
+ip nat outside
+no shut
+ip add 220.110.0.2 255.255.255.252
+no shut
+exit
+access-list 1 permit 192.168.1.0 0.0.0.255
+ip nat inside source list 1 int se0/3/0 overload
+exit
+
+
