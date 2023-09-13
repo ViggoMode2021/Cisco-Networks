@@ -1,0 +1,35 @@
+# R1 #
+
+en
+conf t
+int g0/0
+ip add 10.0.0.1 255.255.255.0
+no shut
+int g0/1
+ip add 192.168.1.1 255.255.255.0
+no shut
+
+# R2 #
+
+en
+conf t
+int g0/0
+ip add 10.0.0.2 255.255.255.0
+no shut
+int g0/1
+ip add 192.168.2.1 255.255.255.0
+no shut
+
+# R1 'configure static route' #
+
+en
+conf t
+ip route 192.168.2.0 255.255.255.0 10.0.0.2
+do sh ip route
+
+# R2 'configure static route' #
+
+en
+conf t
+ip route 192.168.1.0 255.255.255.0 g0/0
+do sh ip route

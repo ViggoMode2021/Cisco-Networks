@@ -1,0 +1,110 @@
+# OSPF #
+
+- Router 1 Config -
+
+en
+conf t
+hostname R1
+
+int fa0/0
+ip add 192.168.12.1 255.255.255.0	
+no sh
+
+int fa0/1
+ip add 192.168.14.1 255.255.255.0
+no sh
+
+int f1/0
+ip add 192.168.1.1 255.255.255.0
+no sh
+
+router ospf 1
+
+int fa0/0
+ip ospf 1 area 0
+int fa0/1
+ip ospf 1 area 0
+int fa1/0
+ip ospf 1 area 0
+
+- Router 2 Config -
+
+en
+conf t
+hostname R2
+
+int fa0/0
+ip add 192.168.12.2  255.255.255.0	
+no sh
+
+int fa0/1
+ip add 192.168.23.1 255.255.255.0
+no sh
+
+router ospf 1
+
+int fa0/0
+ip ospf 1 area 0
+int fa0/1
+ip ospf 1 area 0
+
+- Router 3 Config -
+
+en
+conf t
+hostname R3
+
+int fa0/0
+ip add 192.168.23.2  255.255.255.0	
+no sh
+
+int fa0/1
+ip add 192.168.34.1 255.255.255.0
+no sh
+
+int f1/0
+ip add 192.168.2.1 255.255.255.0
+no sh
+
+router ospf 1
+
+int fa0/0
+ip ospf 1 area 0
+int fa0/1
+ip ospf 1 area 0
+int fa1/0
+ip ospf 1 area 0
+
+
+- Router 4 Config -
+
+en
+conf t
+hostname R4
+
+int fa0/0
+ip add 192.168.34.2  255.255.255.0	
+no sh
+
+int fa0/1
+ip add 192.168.14.2 255.255.255.0
+no sh
+
+router ospf 1
+
+int fa0/0
+ip ospf 1 area 0
+int fa0/1
+ip ospf 1 area 0
+
+
+
+# extra commands #
+
+sh ip route
+
+sh ip route ospf
+
+sh ip ospf neighbor
+
+sh ip ospf database
