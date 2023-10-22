@@ -1,0 +1,35 @@
+* DHCP-Homelab.Local setup script *
+
+-----------------------------------
+
+# Switch script #
+
+en 
+conf t 
+hostname L2-Switch
+exit
+
+-----------------------------------
+
+# Router script #
+
+en
+conf t
+int fa0/1
+ip add 192.168.20.1 255.255.255.0
+no shut
+int fa0/0
+ip add 192.168.10.1
+ip helper-address 192.168.20.5
+no shut
+
+-----------------------------------
+
+# DHCP scope configuration #
+
+Router/Default gateway : 192.168.10.1
+Start IP: 192.168.10.21
+Subnet Mask: 255.255.255.0
+
+
+
