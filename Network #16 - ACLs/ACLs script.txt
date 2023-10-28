@@ -1,0 +1,21 @@
+# ACLs router script #
+
+en
+conf t
+ip access-list standard servers
+permit 192.168.0.10
+exit
+int fa0/1
+ip access-group servers out
+exit
+show access-list servers
+conf t
+ip access-list standard servers
+no permit host 192.168.0.10
+deny host 192.168.0.10
+permit any
+exit
+do show access-list
+no permit any
+permit 192.168.0.0 0.0.0.255
+
