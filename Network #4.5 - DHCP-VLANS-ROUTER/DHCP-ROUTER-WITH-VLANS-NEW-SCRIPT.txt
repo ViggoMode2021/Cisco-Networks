@@ -1,0 +1,47 @@
+# Router config script #
+
+en
+conf t
+int fa0/1
+no shut
+exit
+int fa0/1.10
+encapsulation dot1Q 10
+ip address 192.168.10.1 255.255.255.0
+do sh ip int br
+exit
+int fa0/1.20
+encapsulation dot1Q 20
+ip address 192.168.20.1 255.255.255.0
+do wr
+exit
+ip dhcp pool vlan-10
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+dns-server 1.1.1.1
+ip dhcp excluded-address 192.168.10.1 192.168.10.99
+ip dhcp pool vlan-20
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1 
+dns-server 1.1.1.1
+ip dhcp excluded-address 192.168.20.1 192.168.20.99
+do wr
+
+# Switch config script #
+
+en
+conf t
+vlan 10
+vlan 20
+exit
+int fa0/1
+switchport mode access
+switchport access vlan 10
+int fa0/2
+switchport mode access
+switchport access vlan 20
+do wr
+int fa0/3
+switchport mode trunk
+
+
