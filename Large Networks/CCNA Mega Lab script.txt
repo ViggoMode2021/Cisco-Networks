@@ -1,0 +1,688 @@
+*** Part 1, Steps 2-3-4 ***
+# R1, Access switches
+enable secret jeremysitlab
+username cisco secret ccna
+line console 0 
+   login local
+   exec-timeout 30 
+   logging synchronous
+do wr
+
+# Core, Distibution switches
+enable algorithm-type scrypt secret jeremysitlab
+username cisco algorithm-type scrypt secret ccna
+line console 0
+    login local
+    exec-timeout 30
+    logging synchronous
+do wr
+
+*** Part 2, PortChannel steps ***
+
+# Core Switches (DSW-A)
+en
+conf t
+int range g1/0/4-5
+channel-group 1 mode desirable
+do wr
+
+# Core Switches (DSW-B)
+en
+conf t
+int range g1/0/4-5
+channel-group 1 mode active
+do wr
+
+*** Part 2, VLANs, Trunks steps ***
+
+# Core Switches (DSW-A)
+en
+conf t
+int range g1/0/1-3
+switchport mode trunk
+switchport nonegotiate
+switchport trunk native vlan 1000
+switchport trunk allowed vlan 10,20,40,99
+do wr
+int po1
+switchport mode trunk 
+switchport nonegotiate
+switchport trunk native vlan 1000
+switchport trunk allowed vlan 10,20,40,99
+do wr
+
+# Access Switches (DSW-B)
+
+en
+conf t
+int range g0/1-2
+switchport mode trunk
+switchport nonegotiate
+switchport trunk native vlan 1000
+switchport trunk allowed vlan 10,20,40,99
+do wr
+
+# Core Switches (DSW-B)
+en
+conf t
+int range g1/0/1-3
+switchport mode trunk
+switchport nonegotiate
+switchport trunk native vlan 1000
+switchport trunk allowed vlan 10,20,30,99
+do wr
+int po1
+switchport mode trunk 
+switchport nonegotiate
+switchport trunk native vlan 1000
+switchport trunk allowed vlan 10,20,30,99
+do wr
+
+# Access Switches (DSW-A)
+
+en
+conf t
+int range g0/1-2
+switchport mode trunk
+switchport nonegotiate
+switchport trunk native vlan 1000
+switchport trunk allowed vlan 10,20,30,99
+do wr
+
+*** Part 3, VTP ***
+
+# DSW-A1
+en
+conf t
+vtp domain JeremysITLab
+vtp version 2
+
+# Access Switches ASW-A
+
+en
+conf t
+vtp mode client
+
+# DSW-A1
+
+en
+conf t
+vtp domain JeremysITLab
+vtp version 2
+vtp mode server
+vlan 10 
+name PCs
+vlan 20
+name Phones
+vlan 40 
+name Wi-Fi
+vlan 99
+name Management
+
+
+# ASW-A1
+
+en
+conf t
+int fa0/1
+sw mo ac
+sw no
+sw ac vlan 99
+do wr
+exit
+
+# ASW-B1
+
+en
+conf t
+int fa0/1
+sw mo ac
+sw no
+se ac vlan 99
+do wr
+exit
+
+# ASW-A2, ASW-A3, ASW-B2
+
+en
+conf t
+int fa0/1
+sw mo ac
+sw no
+sw ac vlan 10
+sw voice vlan 20
+do wr
+
+*** Part 2 Step 9
+
+en
+conf t
+int range g1/0/6-24,g1/1/3-4
+shut
+
+** Part 3 - Router IP addresses (R1)
+
+en
+conf t
+int range g0/0/0,g0/1/0
+ip add dhcp
+no shut
+int g0/0
+ip add 10.0.0.33 255.255.255.252
+no sh
+int g0/1
+ip add 10.0.0.37 255.255.255.252
+no shut
+int l0
+ip add 10.0.0.76 255.255.255.255
+do wr
+end
+
+** All L3 switches **
+en
+conf t
+ip routing
+
+** Configure Etherchannel (PaGp) on Distribution switches **
+
+# CSW1
+
+en
+conf t
+int range g1/0/2-3
+no switchport
+channel-group 1 mode desirable
+int po1
+ip add 10.0.0.41 255.255.255.252
+do wr
+end
+
+# CSW2
+
+en
+conf t
+int range g1/0/2-3
+no switchport
+channel-group 1 mode desirable
+int po1
+ip add 10.0.0.42 255.255.255.252
+do wr
+end
+
+*** Part 3, Step 4
+
+# CSW1
+
+int g1/0/1
+no sw
+ip add 10.0.0.34 255.255.255.252
+
+int g1/1/1
+no sw
+ip add 10.0.0.45 255.255.255.252
+
+int g1/1/2
+no sw
+ip add 10.0.0.49 255.255.255.252
+
+int g1/1/3
+no sw
+ip add 10.0.0.53 255.255.255.252
+
+int g1/1/4
+no sw
+ip add 10.0.0.57 255.255.255.252
+
+int l0
+ip add 10.0.0.77 255.255.255.255
+
+int range g1/0/4-24
+sh
+
+do wr
+
+end
+
+# CSW2
+
+int g1/0/1
+no sw
+ip add 10.0.0.38 255.255.255.252
+
+int g1/1/1
+no sw
+ip add 10.0.0.61 255.255.255.252
+
+int g1/1/2
+no sw
+ip add 10.0.0.65 255.255.255.252
+
+int g1/1/3
+no sw
+ip add 10.0.0.69 255.255.255.252
+
+int g1/1/4
+no sw
+ip add 10.0.0.73 255.255.255.252
+
+int l0
+ip add 10.0.0.78 255.255.255.255
+
+int range g1/0/4-24
+sh
+
+do wr
+
+end
+
+# DSW-A1
+
+int g1/1/1
+no sw
+ip add 10.0.0.46 255.255.255.252
+
+int g1/1/2
+no sw
+ip add 10.0.0.62 255.255.255.252
+
+int l0
+ip add 10.0.0.79 255.255.255.252
+
+do wr
+
+end
+
+# DSW-A2
+
+int g1/1/1
+no sw
+ip add 10.0.0.50 255.255.255.252
+
+int g1/1/2
+no sw
+ip add 10.0.0.66 255.255.255.252
+
+int l0
+ip add 10.0.0.80 255.255.255.252
+
+do wr
+
+end
+
+# ASW-A1
+
+en
+conf t
+ip default-gateway 10.0.0.1
+int vlan 99
+ip add 10.0.0.4 255.255.255.240
+do wr
+end
+
+# ASW-A2
+
+en
+conf t
+ip default-gateway 10.0.0.1
+int vlan 99
+ip add 10.0.0.5 255.255.255.240
+do wr
+end
+
+# ASW-A3
+
+en
+conf t
+ip default-gateway 10.0.0.1
+int vlan 99
+ip add 10.0.0.6 255.255.255.240
+do wr
+end
+
+# ASW-B1
+
+en
+conf t
+ip default-gateway 10.0.0.17
+int vlan 99
+ip add 10.0.0.20 255.255.255.240
+do wr
+end
+
+# ASW-B2
+
+en
+conf t
+ip default-gateway 10.0.0.17
+int vlan 99
+ip add 10.0.0.21 255.255.255.240
+do wr
+end
+
+# ASW-B3
+
+en
+conf t
+ip default-gateway 10.0.0.17
+int vlan 99
+ip add 10.0.0.22 255.255.255.240
+do wr
+end
+
+
+# HSRP Office A MGMT subnet (VLAN 99)
+
+# DSW-A1
+
+int vlan 99
+ip add 10.0.0.2 255.255.255.240
+standby ver 2
+standby 1 ip 10.0.0.1
+standby 1 priority 105
+standby 1 preempt
+exit
+int vlan 10
+ip add 10.1.0.2 255.255.255.0
+standby version 2
+standby 2 ip 10.1.0.1
+standby 2 priority 105
+standby 2 preempt
+int vlan 20
+ip add 10.2.0.2 255.255.255.0
+standby ver 2
+standby 3 ip 10.2.0.1 255.255.255.0
+standby 3 pri 105
+standby 3 preempt
+int vlan 40
+ip add 10.6.0.2 255.255.255.0
+standby ver 2 
+standby 4 ip 10.6.0.1
+do wr
+
+# DSW-A2
+
+int vlan 99
+int vlan 99
+ip add 10.0.0.3 255.255.255.240
+standby ver 2
+standby 1 ip 10.0.0.1
+exit
+int vlan 10
+ip add 10.1.0.3 255.255.255.0
+standby ver 2
+standby 2 ip 10.1.0.1
+int vlan 20
+ip add 10.2.0.3 255.255.255.0
+standby ver 2
+standby 3 ip 10.2.0.1
+standby 3 pri 105
+standby 3 preempt
+int vlan 40
+ip add 10.6.0.3 255.255.255.0
+standby ver 2 
+standby 4 ip 10.6.0.1
+standby 4 pri 105
+standby 4 preempt
+do wr
+
+# DSW-B1
+
+int vlan 99
+ip add 10.0.0.18 255.255.255.240
+standby version 2
+standby 1 ip 10.0.0.17
+standby 1 pri 105
+standby preempt
+
+int vlan 10
+ip add 10.3.0.2 255.255.255.0
+standby version 2
+standby 2 ip 10.3.0.1 
+standby 2 pri 105
+standby 2 preempt
+
+int vlan 20
+ip add 10.4.0.2 255.255.255.0
+standby version 2
+standby 3 ip 10.4.0.1
+
+int vlan 30
+ip add 10.5.0.2 255.255.255.0
+standby version 2
+standby 4 ip 10.5.0.1
+
+do wr
+end
+
+# DSW-B2
+
+int vlan 99
+ip add 10.0.0.19 255.255.255.240
+standby version 2
+standby 1 ip 10.0.0.17
+
+int vlan 10
+ip add 10.3.0.3 255.255.255.0
+standby version 2
+standby 2 ip 10.3.0.1
+
+int vlan 20
+ip add 10.4.0.3 255.255.255.0
+standby version 2
+standby 3 ip 10.4.0.1
+standby 3 priority 105
+standby 3 preempt
+
+int vlan 99
+ip add 10.0.0.19 255.255.255.240
+standby version 2
+standby 1 ip 10.0.0.17
+
+int vlan 10
+ip add 10.3.0.3 255.255.255.0
+standby version 2
+standby 2 ip 10.3.0.1
+
+int vlan 30
+ip add 10.5.0.3 255.255.255.0
+standby version 2
+standby 3 ip 10.5.0.1
+standby 3 priority 105
+standby 3 preempt
+
+do wr
+end
+
+* Part 4 Rapid PVST +
+
+* ALL SWITCHES
+
+spanning-tree mode rapid-pvst
+
+# DSW-A1
+
+en 
+conf t
+spanning-tree vlan 10,99 priority 0
+spanning-tree vlan 20,40 priority 4096
+do wr
+end
+
+
+# DSW-A2
+
+en 
+conf t
+spanning-tree vlan 20,40 priority 0
+spanning-tree vlan 10,99 priority 4096
+do wr
+end
+
+# DSW-B1
+
+en
+conf t
+spanning-tree vlan 10,99 pri 0
+span vlan 20,30 pri 4096
+do wr
+
+# DSW-B2
+
+en
+conf t
+spanning-tree vlan 20,30 pri 0
+span vlan 10,99 pri 4096
+do wr
+
+# ASW-A1
+
+en
+conf t
+int fa0/1
+spann portfast
+spanning-tree bpduguard enable
+int fa0/2
+spanning-tree portfast trunk
+do wr
+end
+
+# ASW-A2, A3, B1, B2, B3
+
+en 
+conf t
+int fa0/1
+spanning-tree portfast
+spanning-tree bpduguard enable
+exit
+do wr
+
+# OSPF routing
+
+* R1
+
+en
+conf t
+router ospf 1
+router-id 10.0.0.76
+passive-interface l0
+int l0
+ip ospf 1 area 0
+int range g0/0-1
+ip ospf 1 area 0
+ip ospf network point-to-point
+do wr
+end
+
+* CSW1
+
+en
+conf t
+router ospf 1
+router-id 10.0.0.77
+passive-interface l0
+network 10.0.0.41 0.0.0.0 area 0
+network 10.0.0.34 0.0.0.0 area 0
+network 10.0.0.45 0.0.0.0 area 0
+network 10.0.0.49 0.0.0.0 area 0
+network 10.0.0.53 0.0.0.0 area 0
+network 10.0.0.57 0.0.0.0 area 0
+network 10.0.0.77 0.0.0.0 area 0
+int range g1/0/1,g1/1/1-4
+ip ospf network point-to-point
+do wr
+end
+
+* CSW2
+
+en
+conf t
+router ospf 1
+router-id 10.0.0.78
+passive-interface l0
+network 10.0.0.42 0.0.0.0 area 0
+network 10.0.0.38 0.0.0.0 area 0
+network 10.0.0.61 0.0.0.0 area 0
+network 10.0.0.65 0.0.0.0 area 0
+network 10.0.0.69 0.0.0.0 area 0
+network 10.0.0.73 0.0.0.0 area 0
+network 10.0.0.78 0.0.0.0 area 0
+int range g1/0/1,g1/1/1-4
+ip ospf network point-to-point
+do wr
+end
+
+* DSW-A1
+
+en
+conf t
+router ospf 1
+router-id 10.0.0.79
+passive-interface l0
+passive-interface vlan 10
+passive-interface vlan 20
+passive-interface vlan 40
+network 10.0.0.46 0.0.0.0 area 0
+network 10.0.0.62 0.0.0.0 area 0
+network 10.0.0.79 0.0.0.0 area 0
+network 10.1.0.2 0.0.0.0 area 0
+network 10.2.0.2 0.0.0.0 area 0
+network 10.0.0.2 0.0.0.0 area 0
+network 10.6.0.2 0.0.0.0 area 0
+int range g1/1/1-2
+ip ospf network point-to-point
+do wr
+end
+
+* DSW-A2
+
+en
+conf t
+router ospf 1
+router-id 10.0.0.80
+passive-interface l0
+passive-interface vlan 10
+passive-interface vlan 20
+passive-interface vlan 40
+network 10.0.0.50 0.0.0.0 area 0
+network 10.0.0.66 0.0.0.0 area 0
+network 10.0.0.80 0.0.0.0 area 0
+network 10.1.0.3 0.0.0.0 area 0
+network 10.2.0.3 0.0.0.0 area 0
+network 10.0.0.3 0.0.0.0 area 0
+network 10.6.0.3 0.0.0.0 area 0
+int range g1/1/1-2
+ip ospf network point-to-point
+do wr
+end
+
+* DSW-B1
+
+en
+conf t
+router ospf 1
+router-id 10.0.0.81
+passive-interface loopback0
+passive-interface vlan 10
+passive-interface vlan 20
+passive-interface vlan 40
+network 10.0.0.54 0.0.0.0 area 0
+network 10.0.0.70 0.0.0.0 area 0
+network 10.0.0.81 0.0.0.0 area 0
+network 10.3.0.2 0.0.0.0 area 0
+network 10.4.0.2 0.0.0.0 area 0
+network 10.5.0.2 0.0.0.0 area 0
+network 10.0.0.18 0.0.0.0 area 0
+int range g1/1/1-2
+ip ospf network point-to-point
+do wr
+end
+
+* Part - Static + Floating static routes
+
+* R1
+
+en
+conf t
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+ip route 0.0.0.0 0.0.0.0 203.0.113.5 2
+router ospf 
