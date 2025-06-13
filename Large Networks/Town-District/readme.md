@@ -1,5 +1,3 @@
----
-
 # 📡 Connecticut Town Public Network Infrastructure
 
 ## Overview
