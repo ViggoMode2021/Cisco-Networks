@@ -1,5 +1,3 @@
-Here’s a well-formatted **README** file that documents your **Darien Municipal + Schools Network** design, suitable for a lab folder, documentation site, or GitHub repo:
-
 ---
 
 # 📡 Connecticut Town Public Network Infrastructure
